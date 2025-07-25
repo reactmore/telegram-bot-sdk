@@ -69,4 +69,16 @@ class Telegram extends BaseConfig
      * Make sure folder writable.
      */
     public string $uploadPath = WRITEPATH . 'uploads';
+
+    /**
+     * --------------------------------------------------------------------------
+     * Set Custom Command Path
+     * --------------------------------------------------------------------------
+     *
+     * This Path for save file if bot recived files.
+     * Make sure folder writable.
+     */
+    public string $customCommandPath = [
+        APPPATH . "BotCommand/Commands"
+    ];
 }

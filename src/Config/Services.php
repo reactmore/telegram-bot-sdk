@@ -30,8 +30,12 @@ class Services extends BaseService
         $config   = new SettingsTelegram();
         $telegram = new Telegram($config->apiKey, $config->username);
 
-        if (! empty($config->chatsAdmin)) {
+        if (!empty($config->chatsAdmin)) {
             $telegram->enableAdmins($config->chatsAdmin);
+        }
+
+        if (!empty($config->customCommandPath)) {
+            $telegram->addCommandsPath($config->customCommandPath);
         }
 
         $telegram->enableLimiter(['enabled' => true]);
