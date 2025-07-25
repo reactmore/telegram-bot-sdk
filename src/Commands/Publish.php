@@ -44,6 +44,6 @@ class Publish extends TelegramCommand
             );
         }
 
-        CLI::write(CLI::color('  Published! ', 'green') . 'You can customize the configuration by editing the "app/Config/Tasks.php" file.');
+        CLI::write(CLI::color('  Published! ', 'green') . 'You can customize the configuration by editing the "app/Config/Telegram.php" file.');
     }
 }

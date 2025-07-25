@@ -344,7 +344,7 @@ abstract class Command
         if ($message) {
             $chat = $message->getChat();
 
-            if (! $chat->isPrivateChat()) {
+            if (!$chat->isPrivateChat()) {
                 // Delete the falsely called command message.
                 Request::deleteMessage([
                     'chat_id'    => $chat->getId(),

@@ -75,10 +75,11 @@ class Telegram extends BaseConfig
      * Set Custom Command Path
      * --------------------------------------------------------------------------
      *
-     * This Path for save file if bot recived files.
+     * This Custom command path.
      * Make sure folder writable.
+     * 
      */
-    public string $customCommandPath = [
+    public array $customCommandPath = [
         APPPATH . "BotCommand/Commands"
     ];
 }

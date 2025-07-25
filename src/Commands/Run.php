@@ -6,6 +6,8 @@ namespace Reactmore\TelegramBotSdk\Commands;
 
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\Publisher\Publisher;
+use Reactmore\TelegramBotSdk\Entities\Update;
+use Reactmore\TelegramBotSdk\Telegram;
 use Throwable;
 
 class Run extends TelegramCommand
@@ -75,7 +77,7 @@ class Run extends TelegramCommand
         switch ($action) {
             case 'start':
                 CLI::write('Starting the bot...', 'green');
-                return $this->getUpdates(); 
+                return $this->getUpdates();
                 break;
 
             case 'stop':
@@ -99,6 +101,18 @@ class Run extends TelegramCommand
     {
         try {
             $telegram = service('telegram');
+
+            // $telegram->setUpdateFilter(function (Update $update, Telegram $telegram, &$reason = 'Update denied by update_filter') {
+            //     $user_id = $update->getMessage()->getFrom()->getId();
+            //     if ($user_id === 428) {
+            //         return true;
+            //     }
+
+            //     $reason = "Invalid user with ID {$user_id}";
+            //     return false;
+            // });
+
+
             while (true) {
                 // Get the updates
                 $server_response = $telegram->handleGetUpdates();
@@ -118,9 +132,9 @@ class Run extends TelegramCommand
                 sleep(5);
             }
         } catch (\Reactmore\TelegramBotSdk\Exception\TelegramException $e) {
-            CLI::write(json_encode($e), 'green');
+            CLI::write(json_encode($e), 'red');
         } catch (\Reactmore\TelegramBotSdk\Exception\TelegramLogException $e) {
-            CLI::write(json_encode($e), 'green');
+            CLI::write(json_encode($e), 'red');
         }
     }
 }

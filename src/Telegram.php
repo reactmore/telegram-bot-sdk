@@ -408,13 +408,13 @@ class Telegram
         $allowed_updates = [];
 
         // @todo Backwards compatibility for old signature, remove in next version.
-        if (! is_array($data)) {
+        if (!is_array($data)) {
             $limit = $data;
 
-            @trigger_error(
-                sprintf('Use of $limit and $timeout parameters in %s is deprecated. Use $data array instead.', __METHOD__),
-                E_USER_DEPRECATED,
-            );
+            // @trigger_error(
+            //     sprintf('Use of $limit and $timeout parameters in %s is deprecated. Use $data array instead.', __METHOD__),
+            //     E_USER_DEPRECATED,
+            // );
         } else {
             $offset          = $data['offset'] ?? $offset;
             $limit           = $data['limit'] ?? $limit;

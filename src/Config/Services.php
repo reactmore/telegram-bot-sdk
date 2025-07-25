@@ -35,7 +35,7 @@ class Services extends BaseService
         }
 
         if (!empty($config->customCommandPath)) {
-            $telegram->addCommandsPath($config->customCommandPath);
+            $telegram->addCommandsPaths($config->customCommandPath);
         }
 
         $telegram->enableLimiter(['enabled' => true]);
