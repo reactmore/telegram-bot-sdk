@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * This file is part of the TelegramBot package.
+ *
+ * (c) Avtandil Kikabidze aka LONGMAN <akalongman@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Reactmore\TelegramBotSdk\Entities\InputMessageContent;
+
+use Reactmore\TelegramBotSdk\Entities\InlineQuery\InlineEntity;
+
+/**
+ * Class InputTextMessageContent
+ *
+ * @see https://core.telegram.org/bots/api#inputinvoicemessagecontent
+ *
+ * @method $this  setPrices(LabeledPrice[] $prices)                                 Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+ * @method $this  setSuggestedTipAmounts(int[] $suggested_tip_amounts)                                                                                                                                                  Optional. A JSON-serialized array of suggested amounts of tip in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
+ * @method string getCurrency()                                                                                                                                                                                         Three-letter ISO 4217 currency code, see more on currencies
+ * @method string getDescription()                                                                                                                                                                                      Product description, 1-255 characters
+ * @method bool   getIsFlexible()                                                                                                                                                                                       Optional. Pass True, if the final price depends on the shipping method
+ * @method bool   getNeedEmail()                                                                                                                                                                                        Optional. Pass True, if you require the user's email address to complete the order
+ * @method bool   getNeedName()                                                                                                                                                                                         Optional. Pass True, if you require the user's full name to complete the order
+ * @method bool   getNeedPhoneNumber()                                                                                                                                                                                  Optional. Pass True, if you require the user's phone number to complete the order
+ * @method bool   getNeedShippingAddress()                                                                                                                                                                              Optional. Pass True, if you require the user's shipping address to complete the order
+ * @method string getPayload()                                                                                                                                                                                          Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
+ * @method int    getPhotoHeight()                                                                                                                                                                                      Optional. Photo height
+ * @method int    getPhotoSize()                                                                                                                                                                                        Optional. Photo size
+ * @method string getPhotoUrl()                                                                                                                                                                                         Optional. URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for.
+ * @method int    getPhotoWidth()                                                                                                                                                                                       Optional. Photo width
+ * @method string getProviderData()                                                                                                                                                                                     Optional. A JSON-serialized object for data about the invoice, which will be shared with the payment provider. A detailed description of the required fields should be provided by the payment provider.
+ * @method string getProviderToken()                                                                                                                                                                                    Payment provider token, obtained via Botfather
+ * @method bool   getSendEmailToProvider()                                                                                                                                                                              Optional. Pass True, if user's email address should be sent to provider
+ * @method bool   getSendPhoneNumberToProvider()                                                                                                                                                                        Optional. Pass True, if user's phone number should be sent to provider
+ * @method string getTitle()                                                                                                                                                                                            Product name, 1-32 characters
+ * @method $this  setCurrency(string $currency)                                                                                                                                                                         Three-letter ISO 4217 currency code, see more on currencies
+ * @method $this  setDescription(string $description)                                                                                                                                                                   Product description, 1-255 characters
+ * @method $this  setIsFlexible(bool $is_flexible)                                                                                                                                                                      Optional. Pass True, if the final price depends on the shipping method
+ * @method $this  setNeedEmail(bool $need_email)                                                                                                                                                                        Optional. Pass True, if you require the user's email address to complete the order
+ * @method $this  setNeedName(bool $need_name)                                                                                                                                                                          Optional. Pass True, if you require the user's full name to complete the order
+ * @method $this  setNeedPhoneNumber(bool $need_phone_number)                                                                                                                                                           Optional. Pass True, if you require the user's phone number to complete the order
+ * @method $this  setNeedShippingAddress(bool $need_shipping_address)                                                                                                                                                   Optional. Pass True, if you require the user's shipping address to complete the order
+ * @method $this  setPayload(string $payload)                                                                                                                                                                           Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
+ * @method $this  setPhotoHeight(int $photo_height)                                                                                                                                                                     Optional. Photo height
+ * @method $this  setPhotoSize(int $photo_size)                                                                                                                                                                         Optional. Photo size
+ * @method $this  setPhotoUrl(string $photo_url)                                                                                                                                                                        Optional. URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for.
+ * @method $this  setPhotoWidth(int $photo_width)                                                                                                                                                                       Optional. Photo width
+ * @method $this  setProviderData(string $provider_data)                                                                                                                                                                Optional. A JSON-serialized object for data about the invoice, which will be shared with the payment provider. A detailed description of the required fields should be provided by the payment provider.
+ * @method $this  setProviderToken(string $provider_token)                                                                                                                                                              Payment provider token, obtained via Botfather
+ * @method $this  setSendEmailToProvider(bool $send_email_to_provider)                                                                                                                                                  Optional. Pass True, if user's email address should be sent to provider
+ * @method $this  setSendPhoneNumberToProvider(bool $send_phone_number_to_provider)                                                                                                                                     Optional. Pass True, if user's phone number should be sent to provider
+ * @method $this  setTitle(string $title)                                                                                                                                                                               Product name, 1-32 characters
+ */
+class InputInvoiceMessageContent extends InlineEntity implements InputMessageContent
+{
+}
