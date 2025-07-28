@@ -37,7 +37,7 @@ class Telegram extends BaseConfig
      * @var list<int>
      */
     public array $chatsAdmin = [
-        422269098,
+        4222690298,
     ];
 
     /**
@@ -67,7 +67,7 @@ class Telegram extends BaseConfig
      * local server telegram api.
      */
 
-    public string $customBotApiUrl = "http://192.168.100.139:3366";
+    public string $customBotApiUrl = "http://192.168.1.12:3366";
 
     /**
      * --------------------------------------------------------------------------

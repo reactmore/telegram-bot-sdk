@@ -11,12 +11,16 @@ class TelegramController extends BaseServicesController
 {
     protected $telegram;
 
+    protected $usersModel;
+
     public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
     {
         parent::initController($request, $response, $logger);
-        
+
+        $this->usersModel = model('Reactmore\TelegramBotSdk\Models\UsersModel');
+
         if ($this->telegramSettings->localServer) {
-            \Reactmore\TelegramBotSdk\Request::setCustomBotApiUri($this->telegramSettings->customBotApiUrl, '/downloadss/bot{API_KEY}');
+            \Reactmore\TelegramBotSdk\Request::setCustomBotApiUri($this->telegramSettings->customBotApiUrl);
         }
 
 
@@ -26,49 +30,43 @@ class TelegramController extends BaseServicesController
     public function index()
     {
         try {
-            // $this->telegram->setUpdateFilter(function (Update $update, Telegram $telegram) {
+            $this->telegram->setUpdateFilter(function (Update $update, Telegram $telegram) {
+                $message = $update->getMessage() ?: $update->getCallbackQuery()->getMessage();
 
+                $chat    = $message->getChat();
+                $user    = $message->getFrom();
+                $chat_id = $chat->getId();
+                $user_id = $user->getId();
 
-            //     $data = null;
-            //     if ($update->getCallbackQuery() && $update->getCallbackQuery()->getFrom()) {
-            //         $data = $update->getCallbackQuery()->getFrom();
-            //     } elseif ($update->getMessage() && $update->getMessage()->getFrom()) {
-            //         $data = $update->getMessage()->getFrom();
-            //     }
+                if ($user) {
+                    $this->usersModel->updatedUsersBot($user, $telegram);
+                }
 
-            //     if ($data) {
-            //         $usersModel = model('App\Models\UsersModel');
-            //         $usersModel->insertUser($data, $telegram); 
-            //     }
+                $user = $this->usersModel->getUserById($user_id);
 
-            //     $chat_id = ($update->getCallbackQuery() ? $update->getCallbackQuery()->getMessage()->getChat()->getId() : $update->getMessage()->getChat()->getId());
-            //     $user_id = ($update->getCallbackQuery() ? $update->getCallbackQuery()->getFrom()->getId() : $update->getMessage()->getFrom()->getId());
+                // set language code 
+                service('request')->setLocale('id');
 
-            //     $user = $this->usersModel->getUserById($user_id);
+                if ($user && $user->is_block && !in_array($user_id, $telegram->getAdminList())) {
+                    if ($update->getCallbackQuery() && $command = $update->getCallbackQuery()->getData()) {
+                        if ($command == 'c=common&a=contact') {
+                            return true;
+                        }
+                    }
+                    $conversation = new Conversation(
+                        $user_id,
+                        $chat_id,
+                    );
 
-            //     // set language code 
-            //     service('request')->setLocale('id');
+                    // Fetch conversation command if it exists and execute it.
+                    if ($conversation->exists() && $conversation->getCommand() == 'contact') {
+                        return true;
+                    }
 
-            //     if ($user && $user->is_block && !in_array($user_id, $telegram->getAdminList())) {
-            //         if ($update->getCallbackQuery() && $command = $update->getCallbackQuery()->getData()) {
-            //             if ($command == 'c=common&a=contact') {
-            //                 return true;
-            //             }
-            //         }
-            //         $conversation = new Conversation(
-            //             $user_id,
-            //             $chat_id,
-            //         );
-
-            //         // Fetch conversation command if it exists and execute it.
-            //         if ($conversation->exists() && $conversation->getCommand() == 'contact') {
-            //             return true;
-            //         }
-
-            //         return $this->handleBlockUser($user);
-            //     }
-            //     return true;
-            // });
+                    return $this->handleBlockUser($chat_id);
+                }
+                return true;
+            });
 
             $this->telegram->handle();
         } catch (TelegramException $e) {
@@ -117,6 +115,21 @@ class TelegramController extends BaseServicesController
                 'success' => false,
                 'message' => $e->getMessage()
             ]);
+        }
+    }
+
+    protected function handleBlockUser($chat_id)
+    {
+        $result = \Reactmore\TelegramBotSdk\Request::sendMessage([
+            'chat_id'       => $chat_id,
+            'text'          => 'You have been blocked, all functions, history, your membership cannot be accessed!',
+            'reply_markup'  => createCustomKeyboard([
+                ['text' => 'Open Block', 'callback_data' => 'c=common&a=contact'],
+            ], 1),
+        ]);
+
+        if ($result->isOk()) {
+            return false;
         }
     }
 }
