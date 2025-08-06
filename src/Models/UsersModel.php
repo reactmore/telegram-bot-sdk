@@ -2,9 +2,9 @@
 
 namespace Reactmore\TelegramBotSdk\Models;
 
-use Reactmore\TelegramBotSdk\Models\BaseModel;
+use Reactmore\TelegramBotSdk\Models\BaseTelegramModel;
 
-class UsersModel extends BaseModel
+class UsersModel extends BaseTelegramModel
 {
     protected $table;
 

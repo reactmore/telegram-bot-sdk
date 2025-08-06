@@ -5,8 +5,7 @@ namespace Reactmore\TelegramBotSdk\Models;
 use CodeIgniter\Model;
 use stdClass;
 
-//extend from this model to execute basic db operations
-class BaseModel extends Model
+class BaseTelegramModel extends Model
 {
 
     protected $table;

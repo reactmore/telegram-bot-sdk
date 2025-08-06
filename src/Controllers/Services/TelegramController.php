@@ -53,6 +53,7 @@ class TelegramController extends BaseServicesController
                             return true;
                         }
                     }
+                    
                     $conversation = new Conversation(
                         $user_id,
                         $chat_id,
