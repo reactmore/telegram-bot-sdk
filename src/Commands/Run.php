@@ -21,7 +21,7 @@ class Run extends TelegramCommand
      *
      * @var string
      */
-    protected $usage = 'telegram:action [action] [options]';
+    protected $usage = 'telegram:run [action] [options]';
 
     /**
      * The Command's Arguments
