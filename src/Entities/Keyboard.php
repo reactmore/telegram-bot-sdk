@@ -1,15 +1,6 @@
 <?php
 
-/**
- * This file is part of the TelegramBot package.
- *
- * (c) Avtandil Kikabidze aka LONGMAN <akalongman@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- *
- * Written by Marco Boretto <marco.bore@gmail.com>
- */
+declare(strict_types=1);
 
 namespace Reactmore\TelegramBotSdk\Entities;
 
@@ -152,12 +143,15 @@ class Keyboard extends Entity
      */
     protected function parseButton($button): ?KeyboardButton
     {
+        /** @var class-string<KeyboardButton> $button_class */
         $button_class = $this->getKeyboardButtonClass();
 
-        if ($button instanceof $button_class) {
+        // Pastikan $button adalah objek sebelum instanceof supaya analyzer tidak bingung
+        if (is_object($button) && $button instanceof $button_class) {
             return $button;
         }
 
+        
         if (! $this->isInlineKeyboard() || call_user_func([$button_class, 'couldBe'], $button)) {
             return new $button_class($button);
         }
