@@ -988,31 +988,31 @@ class Telegram
             . mb_strtolower(mb_substr($str, 1, mb_strlen($str), $encoding), $encoding);
     }
 
-    /**
-     * Enable Redis connection
-     */
-    public function enableRedis(array $config = []): Telegram
-    {
-        if (empty($config)) {
-            $config = [
-                'host' => '127.0.0.1',
-                'port' => 6379,
-            ];
-        }
+    // /**
+    //  * Enable Redis connection
+    //  */
+    // public function enableRedis(array $config = []): Telegram
+    // {
+    //     if (empty($config)) {
+    //         $config = [
+    //             'host' => '127.0.0.1',
+    //             'port' => 6379,
+    //         ];
+    //     }
 
-        self::$redis_connection = new \Redis();
-        self::$redis_connection->connect($config['host'], $config['port']);
+    //     self::$redis_connection = new \Redis();
+    //     self::$redis_connection->connect($config['host'], $config['port']);
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    /**
-     * Get the shared Redis client instance.
-     */
-    public static function getRedis(): ?Redis
-    {
-        return self::$redis_connection;
-    }
+    // /**
+    //  * Get the shared Redis client instance.
+    //  */
+    // public static function getRedis(): ?Redis
+    // {
+    //     return self::$redis_connection;
+    // }
 
     /**
      * Enable requests limiter
