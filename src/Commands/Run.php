@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace Reactmore\TelegramBotSdk\Commands;
 
 use CodeIgniter\CLI\CLI;
+use CodeIgniter\CLI\Commands;
 use CodeIgniter\Publisher\Publisher;
+use Psr\Log\LoggerInterface;
 use Reactmore\TelegramBotSdk\Entities\Update;
 use Reactmore\TelegramBotSdk\Telegram;
+use Reactmore\TelegramBotSdk\Exception\TelegramException;
+use Reactmore\TelegramBotSdk\config\Telegram as SettingsTelegram;
 use Throwable;
 
 class Run extends TelegramCommand
@@ -41,6 +45,19 @@ class Run extends TelegramCommand
         '--drop-pending-updates' => 'Optional. If specified, the webhook will use another URL for updates.',
     ];
 
+
+    protected $telegramSettings;
+
+    public function __construct(LoggerInterface $logger, Commands $commands)
+    {
+        parent::__construct($logger, $commands);
+        $this->telegramSettings   = new SettingsTelegram();
+        if ($this->telegramSettings->localServer) {
+            \Reactmore\TelegramBotSdk\Request::setCustomBotApiUri($this->telegramSettings->customBotApiUrl);
+        }
+    }
+
+
     /**
      * Actually execute a command.
      *
@@ -58,7 +75,7 @@ class Run extends TelegramCommand
         $action = $params[0];
 
         // Validasi action yang diterima
-        $validActions = ['start', 'stop', 'update'];
+        $validActions = ['start', 'setwebhook', 'deletewebhook'];
         if (!in_array($action, $validActions)) {
             CLI::error('Invalid action. Valid actions are: ' . implode(', ', $validActions));
             return;
@@ -68,7 +85,7 @@ class Run extends TelegramCommand
         CLI::write("Performing action: $action", 'green');
 
         // Cek apakah opsi --drop-pending-updates diberikan
-        $dropPendingUpdates = isset($params['--drop-pending-updates']) ? true : false;
+        $dropPendingUpdates = isset($params['drop-pending-updates']) ? true : false;
         if ($dropPendingUpdates) {
             CLI::write("Dropping pending updates as requested...", 'yellow');
         }
@@ -80,12 +97,14 @@ class Run extends TelegramCommand
                 return $this->getUpdates();
                 break;
 
-            case 'stop':
-                CLI::write('Stopping the bot...', 'green');
+            case 'setwebhook':
+                CLI::write('Setting Webhook...', 'green');
+                return $this->setWebhook();
                 break;
 
-            case 'update':
-                CLI::write('Updating the bot...', 'green');
+            case 'deletewebhook':
+                CLI::write('delete webhook the bot...', 'green');
+                return $this->deleteWebhook();
                 break;
 
             default:
@@ -135,6 +154,36 @@ class Run extends TelegramCommand
             CLI::write(json_encode($e), 'red');
         } catch (\Reactmore\TelegramBotSdk\Exception\TelegramLogException $e) {
             CLI::write(json_encode($e), 'red');
+        }
+    }
+
+    private function setWebhook()
+    {
+        $telegram = service('telegram');
+        
+        try {
+            $result = $telegram->setWebhook(base_url('telegram/hook'), [
+                'drop_pending_updates' => isset($params['drop-pending-updates']) ? false : true,
+            ]);
+
+            return CLI::write($result->getDescription(), 'green');
+        } catch (TelegramException $e) {
+            return CLI::write($e->getMessage(), 'red');
+        }
+    }
+
+    private function deleteWebhook()
+    {
+        $telegram = service('telegram');
+
+        try {
+            $result = $telegram->deleteWebhook([
+                'drop_pending_updates' => isset($this->options['drop-pending-updates'])  ? false : true,
+            ]);
+
+            return CLI::write($result->getDescription(), 'green');
+        } catch (TelegramException $e) {
+            return CLI::write($e->getMessage(), 'red');
         }
     }
 }
