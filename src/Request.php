@@ -593,7 +593,8 @@ class Request
         $request_params['debug'] = TelegramLog::getDebugLogTempStream();
 
         try {
-            $response = self::$client->post(
+            $response = self::$client->request(
+                'POST',
                 '/bot' . self::$telegram->getApiKey() . '/' . $action,
                 $request_params,
             );
@@ -641,7 +642,8 @@ class Request
 
         try {
             $base_download_uri = str_replace('{API_KEY}', self::$telegram->getApiKey(), self::$api_base_download_uri);
-            self::$client->get(
+            // Undefined method 'get'.intelephense(P1013)
+            self::$client->request('GET',
                 "{$base_download_uri}/{$tg_file_path}",
                 ['debug' => $debug_handle, 'sink' => $file_path],
             );
