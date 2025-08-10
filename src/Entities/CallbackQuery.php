@@ -18,6 +18,7 @@ use Reactmore\TelegramBotSdk\Request;
  * @method string                   getId()              Unique identifier for this query
  * @method string                   getInlineMessageId() Optional. Identifier of the message sent via the bot in inline mode, that originated the query
  * @method MaybeInaccessibleMessage getMessage()         Optional. Message with the callback button that originated the query. Note that message content and message date will not be available if the message is too old
+ * @method bool                     getIsTopicMessage() 
  */
 class CallbackQuery extends Entity
 {
