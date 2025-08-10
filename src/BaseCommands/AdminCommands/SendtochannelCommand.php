@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Reactmore\TelegramBotSdk\Commands\AdminCommands;
+namespace Reactmore\TelegramBotSdk\BaseCommands\AdminCommands;
 
 use Reactmore\TelegramBotSdk\BaseCommands\AdminCommand;
 use Reactmore\TelegramBotSdk\Conversation;
