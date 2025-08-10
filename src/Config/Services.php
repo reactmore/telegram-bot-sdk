@@ -3,7 +3,7 @@
 namespace Reactmore\TelegramBotSdk\Config;
 
 use CodeIgniter\Config\BaseService;
-use Reactmore\TelegramBotSdk\config\Telegram as SettingsTelegram;
+use Reactmore\TelegramBotSdk\Config\Telegram as SettingsTelegram;
 use Reactmore\TelegramBotSdk\Telegram;
 
 /**
