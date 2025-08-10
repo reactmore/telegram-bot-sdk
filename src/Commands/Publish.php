@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Reactmore\TelegramBotSdk\Commands;
 
 use CodeIgniter\CLI\CLI;

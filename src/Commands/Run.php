@@ -1,17 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Reactmore\TelegramBotSdk\Commands;
 
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\CLI\Commands;
-use CodeIgniter\Publisher\Publisher;
 use Psr\Log\LoggerInterface;
-use Reactmore\TelegramBotSdk\Entities\Update;
-use Reactmore\TelegramBotSdk\Telegram;
 use Reactmore\TelegramBotSdk\Exception\TelegramException;
-use Reactmore\TelegramBotSdk\config\Telegram as SettingsTelegram;
+use Reactmore\TelegramBotSdk\Config\Telegram as SettingsTelegram;
 use Throwable;
 
 class Run extends TelegramCommand
