@@ -7,7 +7,7 @@ use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
-use Reactmore\TelegramBotSdk\config\Telegram as SettingsTelegram;
+use Reactmore\TelegramBotSdk\Config\Telegram as SettingsTelegram;
 use Psr\Log\LoggerInterface;
 
 /**
