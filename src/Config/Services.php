@@ -30,6 +30,12 @@ class Services extends BaseService
         $config   = new SettingsTelegram();
         $telegram = new Telegram($config->apiKey, $config->username);
 
+        $envAdmins = env('telegram.chatsAdmin');
+        if (!empty($envAdmins)) {
+            $envAdmins = array_map('trim', explode(',', $envAdmins));
+            $config->chatsAdmin = array_values(array_unique(array_merge($config->chatsAdmin, $envAdmins)));
+        }
+
         if (!empty($config->chatsAdmin)) {
             $telegram->enableAdmins($config->chatsAdmin);
         }
