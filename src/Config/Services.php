@@ -27,7 +27,8 @@ class Services extends BaseService
             return static::getSharedInstance('telegram', $config);
         }
 
-        $config   = new SettingsTelegram();
+        /** @var \Config\Telegram $config */
+        $config   = config('Telegram');
         $telegram = new Telegram($config->apiKey, $config->username);
 
         $envAdmins = env('telegram.chatsAdmin');
