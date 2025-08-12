@@ -37,7 +37,7 @@ class Telegram extends BaseConfig
      * @var list<int>
      */
     public array $chatsAdmin = [
-        4222690298,
+        958587442,
     ];
 
     /**
@@ -57,7 +57,7 @@ class Telegram extends BaseConfig
      *
      * local server telegram api.
      */
-    public bool $localServer = true;
+    public bool $localServer = false;
     
     /**
      * --------------------------------------------------------------------------
