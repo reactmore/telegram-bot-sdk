@@ -53,6 +53,6 @@ abstract class BaseServicesController extends Controller
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 
-        $this->telegramSettings   = new SettingsTelegram();
+        $this->telegramSettings   = config(SettingsTelegram::class);
     }
 }

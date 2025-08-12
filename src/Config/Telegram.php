@@ -14,7 +14,7 @@ class Telegram extends BaseConfig
      * This is the token you receive from BotFather when you create a new bot.
      * Make sure to keep this token secure and do not share it publicly.
      */
-    public string $apiKey = '7771604344:AAHfyqqjTyxVab3ATCTel9Lo_W7Pjbrj9Hs';
+    public string $apiKey = '';
 
     /**
      * --------------------------------------------------------------------------
@@ -24,7 +24,7 @@ class Telegram extends BaseConfig
      * This is the username of your Telegram bot. It must be unique
      * and end with 'bot' (e.g., 'my_bot').
      */
-    public string $username = 'fastworkviewmoreBot';
+    public string $username = '';
 
     /**
      * --------------------------------------------------------------------------
@@ -48,7 +48,7 @@ class Telegram extends BaseConfig
      * These are private access codes that users can use to log in to the bot.
      * Make sure these codes are kept secure.
      */
-    public string $accessCodesLogin = '123';
+    public string $accessCodesLogin = '';
 
     /**
      * --------------------------------------------------------------------------
@@ -67,7 +67,7 @@ class Telegram extends BaseConfig
      * local server telegram api.
      */
 
-    public string $customBotApiUrl = "http://192.168.1.12:3366";
+    public string $customBotApiUrl = "";
 
     /**
      * --------------------------------------------------------------------------
