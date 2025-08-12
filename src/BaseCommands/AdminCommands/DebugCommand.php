@@ -1,14 +1,5 @@
 <?php
 
-/**
- * This file is part of the TelegramBot package.
- *
- * (c) Avtandil Kikabidze aka LONGMAN <akalongman@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Reactmore\TelegramBotSdk\BaseCommands\AdminCommands;
 
 use Exception;
@@ -16,6 +7,8 @@ use Reactmore\TelegramBotSdk\BaseCommands\AdminCommand;
 use Reactmore\TelegramBotSdk\Entities\ServerResponse;
 use Reactmore\TelegramBotSdk\Exception\TelegramException;
 use Reactmore\TelegramBotSdk\Request;
+use Config\Database;
+use CodeIgniter\Database\Exceptions\DatabaseException;
 
 /**
  * Admin "/debug" command
@@ -82,7 +75,22 @@ class DebugCommand extends AdminCommand
         $debug_info[]                  = sprintf('*PHP version:* `%1$s%2$s; %3$s; %4$s`', PHP_VERSION, $php_bit, PHP_SAPI, PHP_OS);
         $debug_info[]                  = sprintf('*Maximum PHP script execution time:* `%d seconds`', ini_get('max_execution_time'));
 
-        $debug_info[] = sprintf('*MySQL version:* `%s`', 'disabled');
+        /** @var \Config\Database $config */
+        $dbConfig = config('Database')->default;
+
+        // log_message('debug', '[DEBUG] Database config: ' . json_encode($dbConfig['database'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        if (!empty($dbConfig['hostname']) && !empty($dbConfig['database']) && !empty($dbConfig['username']) && $dbConfig['DBDriver'] === 'MySQLi') {
+            try {
+                $db = Database::connect();
+                $version = $db->query('SELECT VERSION() AS version')->getRow()->version ?? 'unknown';
+                $debug_info[] = sprintf('*MySQL version:* `%s`', $version);
+            } catch (DatabaseException $e) {
+                $debug_info[] = '*MySQL version:* `disabled`';
+            }
+        } else {
+            $debug_info[] = '*MySQL version:* `disabsled`';
+        }
 
         $debug_info[] = sprintf('*Operating System:* `%s`', php_uname());
 
