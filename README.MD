@@ -95,6 +95,21 @@ $routes->group('telegram', function ($routes) {
 });
 ```
 
+## Spark Command 
+
+```cli
+// make setwebhook https://yourdomain.com/telegram/hook
+php spark telegram:run setwebhook 
+
+// delete your webhook
+php spark telegram:run deletewebhook 
+
+// support 1 argument drop pending update 
+// example : 
+php spark telegram:run setwebhook --drop-pending-updates true
+
+```
+
 ## ⚡ Running Telegram Local Server
 For better performance and to avoid rate limits, use the Telegram Local Server.
 
