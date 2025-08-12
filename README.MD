@@ -35,10 +35,9 @@ telegram.localServer = false
 telegram.customBotApiUrl = "http://192.168.1.17:3366"
 ```
 
-## Example Webhook Controller:
+## Example Custom Webhook Controller:
 
 ```php
-
 <?php
 
 namespace App\Controllers;
@@ -86,8 +85,14 @@ class TelegramController extends BaseServicesController
         }
     }
 }
+```
 
+Dont forget overide routes webhook with your custom webhook 
 
+```php
+$routes->group('telegram', function ($routes) {
+    $routes->post('hook', 'TelegramController::index');
+});
 ```
 
 ## ⚡ Running Telegram Local Server
