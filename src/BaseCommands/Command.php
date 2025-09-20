@@ -133,13 +133,6 @@ abstract class Command
     protected $config = [];
 
     /**
-     * Command args commands
-     *
-     * @var array
-     */
-    protected $args_commands = [];
-
-    /**
      * Constructor
      */
     public function __construct(Telegram $telegram, ?Update $update = null)
@@ -166,13 +159,11 @@ abstract class Command
      *
      * @throws TelegramException
      */
-    public function preExecute($args = []): ServerResponse
+    public function preExecute(): ServerResponse
     {
         if ($this->need_mysql && ! $this->telegram->isDbEnabled()) {
             return $this->executeNoDb();
         }
-
-         $this->args_commands = $args;
 
         if ($this->isPrivateOnly() && $this->removeNonPrivateMessage()) {
             $message = $this->getMessage() ?: $this->getEditedMessage() ?: $this->getChannelPost() ?: $this->getEditedChannelPost();
@@ -218,11 +209,6 @@ abstract class Command
     public function getUpdate(): ?Update
     {
         return $this->update;
-    }
-
-    public function getArgsCommand()
-    {
-        return $this->args_commands ?? [];
     }
 
     /**

@@ -570,7 +570,7 @@ class Telegram
      *
      * @throws TelegramException
      */
-    public function executeCommand(string $command, array $args = []): ServerResponse
+    public function executeCommand(string $command): ServerResponse
     {
         $command = mb_strtolower($command);
 
@@ -588,9 +588,9 @@ class Telegram
             // execute() method is executed after preExecute()
             // This is to prevent executing a DB query without a valid connection
             if ($this->update) {
-                $this->last_command_response = $command_obj->setUpdate($this->update)->preExecute($args);
+                $this->last_command_response = $command_obj->setUpdate($this->update)->preExecute();
             } else {
-                $this->last_command_response = $command_obj->preExecute($args);
+                $this->last_command_response = $command_obj->preExecute();
             }
         }
 
