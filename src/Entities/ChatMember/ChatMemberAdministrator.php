@@ -29,6 +29,17 @@ use Reactmore\TelegramBotSdk\Entities\User;
  * @method string getStatus()                                                                                                                                                                                                                                             The member's status in the chat, always “administrator”
  * @method User   getUser()                                                                                                                                                                                                                                               Information about the user
  * @method bool   getCanPromoteMembers()   True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by the user)
+ * @method bool   getCanChangeInfo()       True, if the user is allowed to change the chat title, photo and other settings
+ * @method bool   getCanInviteUsers()      True, if the user is allowed to invite new users to the chat
+ * @method bool   getCanPostMessages()     Optional. True, if the administrator can post in the channel; channels only
+ * @method bool   getCanEditMessages()     Optional. True, if the administrator can edit messages of other users and can pin messages; channels only
+ * @method bool   getCanPinMessages()      Optional. True, if the user is allowed to pin messages; groups and supergroups only
+ * @method bool   getCanPostStories()      Optional. True, if the administrator can post stories in the channel; channels only
+ * @method bool   getCanEditStories()      Optional. True, if the administrator can edit stories posted by other users; channels only
+ * @method bool   getCanDeleteStories()    Optional. True, if the administrator can delete stories posted by other users; channels only
+ * @method bool   getCanManageTopics()     Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; supergroups only
+ * @method bool   getCanManageDirectMessages() Optional. True, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only
+ * @method string getCustomTitle()         Custom title for this user
  */
 class ChatMemberAdministrator extends Entity implements ChatMember
 {

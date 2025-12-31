@@ -18,7 +18,9 @@ namespace Reactmore\TelegramBotSdk\Entities;
  * @method string getLanguageCode()            Optional. IETF language tag of the user's language
  * @method string getLastName()                Optional. User's or bot’s last name
  * @method bool   getSupportsInlineQueries()   Optional. True, if the bot supports inline queries. Returned only in getMe.
- * @method string getUsername()                Optional. User's or bot’s username
+ * @method bool   getCanConnectToBusiness()    Optional. True, if the bot can be connected to a Telegram Business account to receive its messages. Returned only in getMe.
+ * @method bool   getHasMainWebApp()           Optional. True, if the bot has a main Web App. Returned only in getMe.
+ * @method bool   getHasTopicsEnabled()        Optional. True, if the bot has forum topic mode enabled in private chats. Returned only in getMe.
  */
 class User extends Entity
 {
