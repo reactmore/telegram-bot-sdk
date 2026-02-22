@@ -28,91 +28,111 @@ use Reactmore\TelegramBotSdk\Entities\Topics\GeneralForumTopicUnhidden;
  *
  * @see https://core.telegram.org/bots/api#message
  *
- * @method Animation                     getAnimation()                                                                                                                                        Optional. Message is an animation, information about the animation. For backward compatibility, when this field is set, the document field will also be set
- * @method Audio                         getAudio()                                                                                                                                            Optional. Message is an audio file, information about the file
- * @method string                        getAuthorSignature()                                                                                                                                  Optional. Signature of the post author for messages in channels
- * @method ChatBoostAdded                getBoostAdded()                                                                                                                                       Optional. Service message: user boosted the chat
- * @method string                        getBusinessConnectionId()                                                                                                                             Optional. Unique identifier of the business connection from which the message was received. If non-empty, the message is business_message.
- * @method string                        getCaption()                                                                                                                                          Optional. Caption for the document, photo or video, 0-200 characters
- * @method list<MessageEntity>           getCaptionEntities()                                                                                                                                  Optional. For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption
- * @method bool                          getChannelChatCreated()                                                                                                                               Optional. Service message: the channel has been created. This field can't be received in a message coming through updates, because bot can’t be a member of a channel when it is created. It can only be found in reply_to_message if someone replies to a very first message in a channel.
- * @method Chat                          getChat()                                                                                                                                             Conversation the message belongs to
- * @method ChatBackground                getChatBackgroundSet()                                                                                                                                Optional. Service message: chat background set
- * @method ChatShared                    getChatShared()                                                                                                                                       Optional. Service message: a chat was shared with the bot
- * @method string                        getConnectedWebsite()                                                                                                                                 Optional. The domain name of the website on which the user has logged in.
- * @method Contact                       getContact()                                                                                                                                          Optional. Message is a shared contact, information about the contact
- * @method int                           getDate()                                                                                                                                             Date the message was sent in Unix time
- * @method bool                          getDeleteChatPhoto()                                                                                                                                  Optional. Service message: the chat photo was deleted
- * @method Dice                          getDice()                                                                                                                                             Optional. Message is a dice with random value, 1-6 for “🎲” and “🎯” base emoji, 1-5 for “🏀” and “⚽” base emoji, 1-64 for “🎰” base emoji
- * @method Document                      getDocument()                                                                                                                                         Optional. Message is a general file, information about the file
- * @method int                           getEditDate()                                                                                                                                         Optional. Date the message was last edited in Unix time
- * @method list<MessageEntity>           getEntities()                                                                                                                                         Optional. For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text
- * @method ExternalReplyInfo             getExternalReply()                                                                                                                                    Optional. Information about the message that is being replied to, which may come from another chat or forum topic
- * @method ForumTopicClosed              getForumTopicClosed()                                                                                                                                 Optional. Service message: forum topic closed
- * @method ForumTopicCreated             getForumTopicCreated()                                                                                                                                Optional. Service message: forum topic created
- * @method ForumTopicEdited              getForumTopicEdited()                                                                                                                                 Optional. Service message: forum topic edited
- * @method ForumTopicReopened            getForumTopicReopened()                                                                                                                               Optional. Service message: forum topic reopened
- * @method MessageOrigin                 getForwardOrigin()                                                                                                                                    Optional. Information about the original message for forwarded messages
- * @method User                          getFrom()                                                                                                                                             Optional. Sender, can be empty for messages sent to channels
- * @method Game                          getGame()                                                                                                                                             Optional. Message is a game, information about the game.
- * @method GeneralForumTopicHidden       getGeneralForumTopicHidden()                                                                                                                          Optional. Service message: the 'General' forum topic hidden
- * @method GeneralForumTopicUnhidden     getGeneralForumTopicUnhidden()                                                                                                                        Optional. Service message: the 'General' forum topic unhidden
- * @method Giveaway                      getGiveaway()                                                                                                                                         Optional. The message is a scheduled giveaway message
- * @method GiveawayCompleted             getGiveawayCompleted()                                                                                                                                Optional. Service message: a giveaway without public winners was completed
- * @method GiveawayCreated               getGiveawayCreated()                                                                                                                                  Optional. Service message: a scheduled giveaway was created
- * @method GiveawayWinners               getGiveawayWinners()                                                                                                                                  Optional. A giveaway with public winners was completed
- * @method bool                          getGroupChatCreated()                                                                                                                                 Optional. Service message: the group has been created
- * @method bool                          getHasMediaSpoiler()                                                                                                                                  Optional. True, if the message media is covered by a spoiler animation
- * @method bool                          getHasProtectedContent()                                                                                                                              Optional. True, if the message can't be forwarded
- * @method Invoice                       getInvoice()                                                                                                                                          Optional. Message is an invoice for a payment, information about the invoice.
- * @method bool                          getIsAutomaticForward()                                                                                                                               Optional. True, if the message is a channel post that was automatically forwarded to the connected discussion group
- * @method bool                          getIsFromOffline()                                                                                                                                    Optional. True, if the message was sent by an offline user. Applicable to messages sent by the bot on behalf of a user to a fellow user in a private chat.
- * @method bool                          getIsTopicMessage()                                                                                                                                   Optional. True, if the message is sent to a forum topic
- * @method LinkPreviewOptions            getLinkPreviewOptions()                                                                                                                               Optional. Options used for link preview generation for the message, if it is a text message and link preview options were changed
- * @method Location                      getLocation()                                                                                                                                         Optional. Message is a shared location, information about the location
- * @method string                        getMediaGroupId()                                                                                                                                     Optional. The unique identifier of a media message group this message belongs to
- * @method MessageAutoDeleteTimerChanged getMessageAutoDeleteTimerChanged()                                                                                                                    Optional. Service message: auto-delete timer settings changed in the chat
- * @method int                           getMessageId()                                                                                                                                        Unique message identifier
- * @method int                           getMessageThreadId()                                                                                                                                  Optional. Unique identifier of a message thread to which the message belongs; for supergroups only
- * @method int                           getMigrateFromChatId()                                                                                                                                Optional. The supergroup has been migrated from a group with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
- * @method int                           getMigrateToChatId()                                                                                                                                  Optional. The group has been migrated to a supergroup with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
- * @method list<PhotoSize>               getNewChatPhoto()                                                                                                                                     Optional. A chat photo was changed to this value
- * @method string                        getNewChatTitle()                                                                                                                                     Optional. A chat title was changed to this value
- * @method PaidMediaInfo                 getPaidMedia()                                                                                                                                        Optional. Message is a paid media purchase, information about the paid media
- * @method PassportData                  getPassportData()                                                                                                                                     Optional. Telegram Passport data
- * @method list<PhotoSize>               getPhoto()                                                                                                                                            Optional. Message is a photo, available sizes of the photo
- * @method MaybeInaccessibleMessage      getPinnedMessage()                                                                                                                                    Optional. Specified message was pinned. Note that the Message object in this field will not contain further reply_to_message fields even if it is itself a reply.
- * @method Poll                          getPoll()                                                                                                                                             Optional. Message is a native poll, information about the poll
- * @method ProximityAlertTriggered       getProximityAlertTriggered()                                                                                                                          Optional. Service message. A user in the chat triggered another user's proximity alert while sharing Live Location.
- * @method TextQuote                     getQuote()                                                                                                                                            Optional. For replies that quote part of the original message, the quoted part of the message
- * @method InlineKeyboard                getReplyMarkup()                                                                                                                                      Optional. Inline keyboard attached to the message. login_url buttons are represented as ordinary url buttons.
- * @method ReplyToMessage                getReplyToMessage()                                                                                                                                   Optional. For replies, the original message. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.
- * @method Story                         getReplyToStory()                                                                                                                                     Optional. For replies to a story, the original story
- * @method int                           getSenderBoostCount()                                                                                                                                 Optional. If the sender of the message boosted the chat, the number of boosts added by the user
- * @method User                          getSenderBusinessBot()                                                                                                                                Optional. The bot that actually sent the message on behalf of the business account. Available only for outgoing messages sent on behalf of the business account.
- * @method Chat                          getSenderChat()                                                                                                                                       Optional. Sender of the message, sent on behalf of a chat. The channel itself for channel messages. The supergroup itself for messages from anonymous group administrators. The linked channel for messages automatically forwarded to the discussion group
- * @method Sticker                       getSticker()                                                                                                                                          Optional. Message is a sticker, information about the sticker
- * @method Story                         getStory()                                                                                                                                            Optional. Message is a forwarded story
- * @method SuccessfulPayment             getSuccessfulPayment()                                                                                                                                Optional. Message is a service message about a successful payment, information about the payment.
- * @method bool                          getSupergroupChatCreated()                                                                                                                            Optional. Service message: the supergroup has been created. This field can't be received in a message coming through updates, because bot can’t be a member of a supergroup when it is created. It can only be found in reply_to_message if someone replies to a very first message in a directly created supergroup.
- * @method StarTransaction               getTransaction()                                                                                                                                      Optional. Message is a service message about a successful payment, information about the payment.
- * @method UsersShared                   getUsersShared()                                                                                                                                      Optional. Service message: users were shared with the bot
- * @method Venue                         getVenue()                                                                                                                                            Optional. Message is a venue, information about the venue
- * @method User                          getViaBot()                                                                                                                                           Optional. Bot through which the message was sent
- * @method Video                         getVideo()                                                                                                                                            Optional. Message is a video, information about the video
- * @method VideoChatEnded                getVideoChatEnded()                                                                                                                                   Optional. Service message: voice chat ended
- * @method VideoChatParticipantsInvited  getVideoChatParticipantsInvited()                                                                                                                     Optional. Service message: new participants invited to a voice chat
- * @method VideoChatScheduled            getVideoChatScheduled()                                                                                                                               Optional. Service message: voice chat scheduled
- * @method VideoChatStarted              getVideoChatStarted()                                                                                                                                 Optional. Service message: voice chat started
- * @method VideoNote                     getVideoNote()                                                                                                                                        Optional. Message is a video note message, information about the video
- * @method Voice                         getVoice()                                                                                                                                            Optional. Message is a voice message, information about the file
- * @method WebAppInfo                    getWebApp()                                                                                                                                           Optional. Service message: a Web App was launched for the user
- * @method WebAppData                    getWebAppData()                                                                                                                                       Optional. Service message: data sent by a Web App
- * @method WriteAccessAllowed            getWriteAccessAllowed()                                                                                                                               Optional. Service message: the user allowed the bot added to the attachment menu to write messages
- * @method $this                         setPaidMedia(PaidMediaInfo $paidMedia)                                                                                                                Optional. Message is a paid media purchase, information about the paid media
- * @method $this                         setTransaction(StarTransaction $transaction)                                                                                                          Optional. Message is a service message about a successful payment, information about the payment.
- * @method $this                         setWebApp(WebAppInfo $webApp)                                                                                                                         Optional. Service message: a Web App was launched for the user
- * @method User                          getLeftChatMember()                         Optional. A member was removed from the group, information about them (this member may be the bot itself)
+ * @method int                                    getMessageId()                              Unique message identifier
+ * @method int                                    getMessageThreadId()                        Optional. Unique identifier of a message thread to which the message belongs; for supergroups and private chats with topic mode enabled only
+ * @method DirectMessagesTopic                    getDirectMessagesTopic()                    Optional. Information about the direct messages chat topic that contains the message
+ * @method User                                   getFrom()                                   Optional. Sender, can be empty for messages sent to channels
+ * @method Chat                                   getSenderChat()                             Optional. Sender of the message, sent on behalf of a chat. The channel itself for channel messages. The supergroup itself for messages from anonymous group administrators. The linked channel for messages automatically forwarded to the discussion group
+ * @method int                                    getSenderBoostCount()                       Optional. If the sender of the message boosted the chat, the number of boosts added by the user
+ * @method int                                    getDate()                                   Date the message was sent in Unix time
+ * @method Chat                                   getChat()                                   Conversation the message belongs to
+ * @method MessageOrigin                          getForwardOrigin()                          Optional. Information about the original message for forwarded messages
+ * @method bool                                   getIsTopicMessage()                         Optional. True, if the message is sent to a forum topic or a private chat with topic mode enabled
+ * @method GiftInfo                               getGiftUpgradeSent()                        Optional. Service message: upgrade of a gift was purchased after the gift was sent
+ * @method bool                                   getIsAutomaticForward()                     Optional. True, if the message is a channel post that was automatically forwarded to the connected discussion group
+ * @method ReplyToMessage                         getReplyToMessage()                         Optional. For replies, the original message. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.
+ * @method ExternalReplyInfo                      getExternalReply()                          Optional. Information about the message that is being replied to, which may come from another chat or forum topic
+ * @method TextQuote                              getQuote()                                  Optional. For replies that quote part of the original message, the quoted part of the message
+ * @method Story                                  getReplyToStory()                           Optional. For replies to a story, the original story
+ * @method int                                    getReplyToChecklistTaskId()                 Optional. Identifier of the specific checklist task that is being replied to
+ * @method User                                   getViaBot()                                 Optional. Bot through which the message was sent
+ * @method int                                    getEditDate()                               Optional. Date the message was last edited in Unix time
+ * @method bool                                   getHasProtectedContent()                    Optional. True, if the message can't be forwarded
+ * @method SuggestedPostInfo                      getSuggestedPostInfo()                      Optional. Information about suggested post parameters if the message is a suggested post in a channel direct messages chat. If the message is an approved or declined suggested post, then it can't be edited.
+ * @method string                                 getMediaGroupId()                           Optional. The unique identifier of a media message group this message belongs to
+ * @method string                                 getAuthorSignature()                        Optional. Signature of the post author for messages in channels
+ * @method LinkPreviewOptions                     getLinkPreviewOptions()                     Optional. Options used for link preview generation for the message, if it is a text message and link preview options were changed
+ * @method MessageEntity[]                        getEntities()                               Optional. For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text
+ * @method MessageEntity[]                        getCaptionEntities()                        Optional. For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption
+ * @method Audio                                  getAudio()                                  Optional. Message is an audio file, information about the file
+ * @method Document                               getDocument()                               Optional. Message is a general file, information about the file
+ * @method Animation                              getAnimation()                              Optional. Message is an animation, information about the animation. For backward compatibility, when this field is set, the document field will also be set
+ * @method Game                                   getGame()                                   Optional. Message is a game, information about the game.
+ * @method PhotoSize[]                            getPhoto()                                  Optional. Message is a photo, available sizes of the photo
+ * @method Sticker                                getSticker()                                Optional. Message is a sticker, information about the sticker
+ * @method Story                                  getStory()                                  Optional. Message is a forwarded story
+ * @method Video                                  getVideo()                                  Optional. Message is a video, information about the video
+ * @method Voice                                  getVoice()                                  Optional. Message is a voice message, information about the file
+ * @method VideoNote                              getVideoNote()                              Optional. Message is a video note message, information about the video
+ * @method string                                 getCaption()                                Optional. Caption for the document, photo or video, 0-200 characters
+ * @method bool                                   getHasMediaSpoiler()                        Optional. True, if the message media is covered by a spoiler animation
+ * @method Checklist                              getChecklist()                              Optional. Message is a checklist
+ * @method Contact                                getContact()                                Optional. Message is a shared contact, information about the contact
+ * @method Location                               getLocation()                               Optional. Message is a shared location, information about the location
+ * @method Venue                                  getVenue()                                  Optional. Message is a venue, information about the venue
+ * @method Poll                                   getPoll()                                   Optional. Message is a native poll, information about the poll
+ * @method Dice                                   getDice()                                   Optional. Message is a dice with random value, 1-6 for “🎲” and “🎯” base emoji, 1-5 for “🏀” and “⚽” base emoji, 1-64 for “🎰” base emoji
+ * @method User[]                                 getNewChatMembers()                         Optional. A new member(s) was added to the group, information about them (one of this members may be the bot itself)
+ * @method User                                   getLeftChatMember()                         Optional. A member was removed from the group, information about them (this member may be the bot itself)
+ * @method string                                 getNewChatTitle()                           Optional. A chat title was changed to this value
+ * @method PhotoSize[]                            getNewChatPhoto()                           Optional. A chat photo was changed to this value
+ * @method MessageAutoDeleteTimerChanged          getMessageAutoDeleteTimerChanged()          Optional. Service message: auto-delete timer settings changed in the chat
+ * @method bool                                   getDeleteChatPhoto()                        Optional. Service message: the chat photo was deleted
+ * @method bool                                   getGroupChatCreated()                       Optional. Service message: the group has been created
+ * @method bool                                   getSupergroupChatCreated()                  Optional. Service message: the supergroup has been created. This field can't be received in a message coming through updates, because bot can’t be a member of a supergroup when it is created. It can only be found in reply_to_message if someone replies to a very first message in a directly created supergroup.
+ * @method bool                                   getChannelChatCreated()                     Optional. Service message: the channel has been created. This field can't be received in a message coming through updates, because bot can’t be a member of a channel when it is created. It can only be found in reply_to_message if someone replies to a very first message in a channel.
+ * @method int                                    getMigrateToChatId()                        Optional. The group has been migrated to a supergroup with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
+ * @method int                                    getMigrateFromChatId()                      Optional. The supergroup has been migrated from a group with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
+ * @method MaybeInaccessibleMessage               getPinnedMessage()                          Optional. Specified message was pinned. Note that the Message object in this field will not contain further reply_to_message fields even if it is itself a reply.
+ * @method Invoice                                getInvoice()                                Optional. Message is an invoice for a payment, information about the invoice.
+ * @method SuccessfulPayment                      getSuccessfulPayment()                      Optional. Message is a service message about a successful payment, information about the payment.
+ * @method UsersShared                            getUsersShared()                            Optional. Service message: users were shared with the bot
+ * @method ChatShared                             getChatShared()                             Optional. Service message: a chat was shared with the bot
+ * @method string                                 getConnectedWebsite()                       Optional. The domain name of the website on which the user has logged in.
+ * @method WriteAccessAllowed                     getWriteAccessAllowed()                     Optional. Service message: the user allowed the bot added to the attachment menu to write messages
+ * @method PassportData                           getPassportData()                           Optional. Telegram Passport data
+ * @method ProximityAlertTriggered                getProximityAlertTriggered()                Optional. Service message. A user in the chat triggered another user's proximity alert while sharing Live Location.
+ * @method ChatBoostAdded                         getBoostAdded()                             Optional. Service message: user boosted the chat
+ * @method ForumTopicCreated                      getForumTopicCreated()                      Optional. Service message: forum topic created
+ * @method ForumTopicEdited                       getForumTopicEdited()                       Optional. Service message: forum topic edited
+ * @method ForumTopicClosed                       getForumTopicClosed()                       Optional. Service message: forum topic closed
+ * @method ForumTopicReopened                     getForumTopicReopened()                     Optional. Service message: forum topic reopened
+ * @method GeneralForumTopicHidden                getGeneralForumTopicHidden()                Optional. Service message: the 'General' forum topic hidden
+ * @method GeneralForumTopicUnhidden              getGeneralForumTopicUnhidden()              Optional. Service message: the 'General' forum topic unhidden
+ * @method GiveawayCreated                        getGiveawayCreated()                        Optional. Service message: a scheduled giveaway was created
+ * @method Giveaway                               getGiveaway()                               Optional. The message is a scheduled giveaway message
+ * @method GiveawayWinners                        getGiveawayWinners()                        Optional. A giveaway with public winners was completed
+ * @method GiveawayCompleted                      getGiveawayCompleted()                      Optional. Service message: a giveaway without public winners was completed
+ * @method VideoChatScheduled                     getVideoChatScheduled()                     Optional. Service message: voice chat scheduled
+ * @method VideoChatStarted                       getVideoChatStarted()                       Optional. Service message: voice chat started
+ * @method VideoChatEnded                         getVideoChatEnded()                         Optional. Service message: voice chat ended
+ * @method VideoChatParticipantsInvited           getVideoChatParticipantsInvited()           Optional. Service message: new participants invited to a voice chat
+ * @method WebAppData                             getWebAppData()                             Optional. Service message: data sent by a Web App
+ * @method InlineKeyboard                         getReplyMarkup()                            Optional. Inline keyboard attached to the message. login_url buttons are represented as ordinary url buttons.
+ * @method string                                 getBusinessConnectionId()                   Optional. Unique identifier of the business connection from which the message was received. If non-empty, the message is business_message.
+ * @method User                                   getSenderBusinessBot()                      Optional. The bot that actually sent the message on behalf of the business account. Available only for outgoing messages sent on behalf of the business account.
+ * @method bool                                   getIsFromOffline()                          Optional. True, if the message was sent by an offline user. Applicable to messages sent by the bot on behalf of a user to a fellow user in a private chat.
+ * @method ChatBackground                         getChatBackgroundSet()                      Optional. Service message: chat background set
+ * @method ChecklistTasksDone                     getChecklistTasksDone()                     Optional. Service message: some tasks in a checklist were marked as done or not done
+ * @method ChecklistTasksAdded                    getChecklistTasksAdded()                    Optional. Service message: tasks were added to a checklist
+ * @method DirectMessagePriceChanged              getDirectMessagePriceChanged()              Optional. Service message: the price for paid messages in the corresponding direct messages chat of a channel has changed
+ *
+ * @method PaidMediaInfo                          getPaidMedia()                              Optional. Message is a paid media purchase, information about the paid media
+ * @method StarTransaction                        getTransaction()                            Optional. Message is a service message about a successful payment, information about the payment.
+ * @method WebAppInfo                             getWebApp()                                 Optional. Service message: a Web App was launched for the user
+ * @method GiftInfo                               getGift()                                   Optional. Service message: a regular gift was sent or received
+ * @method UniqueGiftInfo                         getUniqueGift()                             Optional. Service message: a unique gift was sent or received
+ * @method PaidMessagePriceChanged                getPaidMessagePriceChanged()                Optional. Service message: the price for paid messages has changed in the chat
+ * @method SuggestedPostApproved                  getSuggestedPostApproved()                  Optional. Service message: a suggested post was approved
+ * @method SuggestedPostApprovalFailed            getSuggestedPostApprovalFailed()            Optional. Service message: approval of a suggested post has failed
+ * @method SuggestedPostDeclined                  getSuggestedPostDeclined()                  Optional. Service message: a suggested post was declined
+ * @method SuggestedPostPaid                      getSuggestedPostPaid()                      Optional. Service message: payment for a suggested post was received
+ * @method SuggestedPostRefunded                  getSuggestedPostRefunded()                  Optional. Service message: payment for a suggested post was refunded
+ * @method int                                    getPaidStarCount()                          Optional. The number of Telegram Stars that were paid by the sender of the message to send it
+ *
+ * @method $this                                  setPaidMedia(PaidMediaInfo $paidMedia)        Optional. Message is a paid media purchase, information about the paid media
+ * @method $this                                  setTransaction(StarTransaction $transaction)  Optional. Message is a service message about a successful payment, information about the payment.
+ * @method $this                                  setWebApp(WebAppInfo $webApp)                 Optional. Service message: a Web App was launched for the user
  */
 class Message extends Entity implements MaybeInaccessibleMessage
 {
@@ -122,6 +142,7 @@ class Message extends Entity implements MaybeInaccessibleMessage
     protected function subEntities(): array
     {
         return [
+            'direct_messages_topic'             => DirectMessagesTopic::class,
             'from'                              => User::class,
             'sender_chat'                       => Chat::class,
             'chat'                              => Chat::class,
@@ -179,9 +200,23 @@ class Message extends Entity implements MaybeInaccessibleMessage
             'web_app_data'                      => WebAppData::class,
             'reply_markup'                      => InlineKeyboard::class,
             'chat_background_set'               => ChatBackground::class,
+            'checklist'                         => Checklist::class,
+            'checklist_tasks_done'              => ChecklistTasksDone::class,
+            'checklist_tasks_added'             => ChecklistTasksAdded::class,
+            'direct_message_price_changed'      => DirectMessagePriceChanged::class,
             'paid_media'                        => PaidMediaInfo::class,
             'transaction'                       => StarTransaction::class,
             'web_app'                           => WebAppInfo::class,
+            'gift'                              => GiftInfo::class,
+            'unique_gift'                       => UniqueGiftInfo::class,
+            'suggested_post_info'               => SuggestedPostInfo::class,
+            'gift_upgrade_sent'                 => GiftInfo::class,
+            'paid_message_price_changed'        => PaidMessagePriceChanged::class,
+            'suggested_post_approved'           => SuggestedPostApproved::class,
+            'suggested_post_approval_failed'    => SuggestedPostApprovalFailed::class,
+            'suggested_post_declined'           => SuggestedPostDeclined::class,
+            'suggested_post_paid'               => SuggestedPostPaid::class,
+            'suggested_post_refunded'           => SuggestedPostRefunded::class,
         ];
     }
 
