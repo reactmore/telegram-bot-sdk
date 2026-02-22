@@ -110,6 +110,53 @@ php spark telegram:run setwebhook --drop-pending-updates true
 
 ```
 
+### Webhook Secret Code:
+
+```php
+## 🔐 Webhook Secret Token
+
+For enhanced security, you can set a secret token when you [set your webhook](https://core.telegram.org/bots/api#setwebhook). Telegram will then send this token in the `X-Telegram-Bot-Api-Secret-Token` header with every update. This library can automatically validate this token for you.
+
+### 1. Set the Webhook with a Secret Token
+
+When setting your webhook, provide a `secret_token`:
+
+```php
+$telegram->setWebhook('https://your-domain.com/hook.php', [
+    'secret_token' => 'YOUR_SECRET_TOKEN',
+]);
+```
+
+### 2. Configure Your Bot to Verify the Token
+
+In your webhook handler (e.g., `hook.php`), set the same secret token on your `Telegram` object. The library will then automatically check the header on incoming requests and throw an exception if the token is missing or invalid.
+
+```php
+<?php
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+$bot_api_key  = 'YOUR_BOT_API_KEY';
+$bot_username = 'YOUR_BOT_USERNAME';
+$bot_secret   = 'YOUR_SECRET_TOKEN';
+
+try {
+    $telegram = new Reactmore\TelegramBotSdk\Telegram($bot_api_key, $bot_username);
+
+    // Set the secret token for incoming webhook requests
+    $telegram->setSecretToken($bot_secret);
+
+    // Handle the update
+    $telegram->handle();
+
+} catch (Longman\TelegramBot\Exception\TelegramException $e) {
+    // Log the error
+    error_log($e->getMessage());
+}
+
+This ensures that only requests from Telegram with the correct secret token are processed by your bot.
+```
+
 ## ⚡ Running Telegram Local Server
 For better performance and to avoid rate limits, use the Telegram Local Server.
 
