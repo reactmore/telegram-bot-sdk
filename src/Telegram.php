@@ -76,6 +76,13 @@ class Telegram
     protected $input = '';
 
     /**
+     * Secret token to authorise webhook requests
+     *
+     * @var string
+     */
+    protected $secret_token = '';
+
+    /**
      * Custom commands paths
      *
      * @var array
@@ -472,6 +479,10 @@ class Telegram
     {
         if ($this->bot_username === '') {
             throw new TelegramException('Bot Username is not defined!');
+        }
+
+        if ($this->secret_token !== '' && $this->secret_token !== Request::getSecretTokenHeader()) {
+            throw new TelegramException('Secret token is invalid!');
         }
 
         $input = Request::getInput();
@@ -1076,7 +1087,7 @@ class Telegram
             ]);
         }
 
-        $newUpdate = static fn ($text = '') => new Update([
+        $newUpdate = static fn($text = '') => new Update([
             'update_id' => -1,
             'message'   => [
                 'message_id' => -1,
@@ -1164,6 +1175,21 @@ class Telegram
 
         return mb_strtolower(preg_replace('/(.)(?=[\p{Lu}])/u', '$1_', substr($class, 0, -7)));
     }
+
+    /**
+     * Set the secret token to be used for webhook verification
+     *
+     * @param string $secret_token
+     *
+     * @return Telegram
+     */
+    public function setSecretToken(string $secret_token): Telegram
+    {
+        $this->secret_token = $secret_token;
+
+        return $this;
+    }
+
 
     /**
      * Converts a command name into the name of a class.
