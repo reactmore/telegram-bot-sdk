@@ -149,12 +149,43 @@ try {
     // Handle the update
     $telegram->handle();
 
-} catch (Longman\TelegramBot\Exception\TelegramException $e) {
+} catch (Reactmore\TelegramBotSdk\Exception\TelegramException $e) {
     // Log the error
     error_log($e->getMessage());
 }
 
 This ensures that only requests from Telegram with the correct secret token are processed by your bot.
+```
+
+### 3. Prevent Duplicate Updates
+
+Enabling Redis also activates the built-in duplicate update prevention mechanism. This is useful when the bot receives the same update multiple times due to timeouts or retries from Telegram.
+
+When Redis is enabled:
+1.  The library checks if the `update_id` exists in Redis.
+2.  If it exists, the update is ignored, and a fake success response is returned to Telegram to stop retries.
+3.  If it doesn't exist, the `update_id` is stored in Redis with a retention time (TTL) of 60 seconds.
+
+You can customize the retention time (in seconds):
+
+```php
+// Set retention time to 120 seconds
+Longman\TelegramBot\Telegram::setUpdateRetentionTime(120);
+```
+
+---
+
+## ⚙️ Advanced Configuration
+
+### Request Timeout
+
+To prevent your server from hanging on slow Telegram API requests (e.g., cURL error 28), you can set a custom timeout for the HTTP client. The default timeout is 60 seconds.
+
+```php
+use Reactmore\TelegramBotSdk\Request;
+
+// Set request timeout to 30 seconds
+Request::setClientTimeout(30);
 ```
 
 ## ⚡ Running Telegram Local Server

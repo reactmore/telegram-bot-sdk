@@ -25,15 +25,6 @@ use Throwable;
 
 class Telegram
 {
-    /**
-     * The command to be executed when there's a new message update and nothing more suitable is found
-     */
-    public const GENERIC_MESSAGE_COMMAND = 'genericmessage';
-
-    /**
-     * The command to be executed by default (when no other relevant commands are applicable)
-     */
-    public const GENERIC_COMMAND = 'generic';
 
     /**
      * Version
@@ -42,10 +33,15 @@ class Telegram
      */
     protected $version = '1.1.4';
 
-    /**
-     * @var Redis|null
-     */
+    /** @var \Redis|null */
     private static $redis_connection;
+
+    /**
+     * Update retention time in Redis (in seconds)
+     *
+     * @var int
+     */
+    private static $update_retention_time = 60;
 
     /**
      * Telegram API key
@@ -181,6 +177,16 @@ class Telegram
     protected $last_update_id;
 
     /**
+     * The command to be executed when there's a new message update and nothing more suitable is found
+     */
+    public const GENERIC_MESSAGE_COMMAND = 'genericmessage';
+
+    /**
+     * The command to be executed by default (when no other relevant commands are applicable)
+     */
+    public const GENERIC_COMMAND = 'generic';
+
+    /**
      * Update filter method
      *
      * @var callable
@@ -190,6 +196,9 @@ class Telegram
     /**
      * Telegram constructor.
      *
+     * @param string $api_key
+     * @param string $bot_username
+     *
      * @throws TelegramException
      */
     public function __construct(string $api_key, string $bot_username = '')
@@ -198,7 +207,7 @@ class Telegram
             throw new TelegramException('API KEY not defined!');
         }
         preg_match('/(\d+):[\w\-]+/', $api_key, $matches);
-        if (! isset($matches[1])) {
+        if (!isset($matches[1])) {
             throw new TelegramException('Invalid API KEY defined!');
         }
         $this->bot_id  = (int) $matches[1];
@@ -206,7 +215,7 @@ class Telegram
 
         $this->bot_username = $bot_username;
 
-        // Add default system commands path
+        //Add default system commands path
         $this->addCommandsPath(TB_BASE_COMMANDS_PATH . '/SystemCommands');
 
         Request::initialize($this);
@@ -216,7 +225,6 @@ class Telegram
      * Get commands list
      *
      * @return array $commands
-     *
      * @throws TelegramException
      */
     public function getCommandsList(): array
@@ -225,12 +233,12 @@ class Telegram
 
         foreach ($this->commands_paths as $path) {
             try {
-                // Get all "*Command.php" files
+                //Get all "*Command.php" files
                 $files = new RegexIterator(
                     new RecursiveIteratorIterator(
-                        new RecursiveDirectoryIterator($path),
+                        new RecursiveDirectoryIterator($path)
                     ),
-                    '/^.+Command.php$/',
+                    '/^.+Command.php$/'
                 );
 
                 foreach ($files as $file) {
@@ -238,7 +246,7 @@ class Telegram
                     $command = $this->classNameToCommandName(substr($file->getFilename(), 0, -4));
 
                     // Invalid Classname
-                    if (null === $command) {
+                    if (is_null($command)) {
                         continue;
                     }
 
@@ -270,6 +278,8 @@ class Telegram
      * @param string $auth     Auth of command
      * @param string $command  Command name
      * @param string $filepath Path to the command file
+     *
+     * @return string|null
      */
     public function getCommandClassName(string $auth, string $command, string $filepath = ''): ?string
     {
@@ -280,7 +290,7 @@ class Telegram
             return null;
         }
 
-        $auth = $this->ucFirstUnicode($auth);
+        $auth    = $this->ucFirstUnicode($auth);
 
         // First, check for directly assigned command class.
         if ($command_class = $this->command_classes[$auth][$command] ?? null) {
@@ -291,7 +301,7 @@ class Telegram
         $command_namespace = __NAMESPACE__ . '\\Commands\\' . $auth . 'Commands';
 
         // Check if we can get the namespace from the file (if passed).
-        if ($filepath && ! ($command_namespace = $this->getFileNamespace($filepath))) {
+        if ($filepath && !($command_namespace = $this->getFileNamespace($filepath))) {
             return null;
         }
 
@@ -306,6 +316,11 @@ class Telegram
 
     /**
      * Get an object instance of the passed command
+     *
+     * @param string $command
+     * @param string $filepath
+     *
+     * @return Command|null
      */
     public function getCommandObject(string $command, string $filepath = ''): ?Command
     {
@@ -313,9 +328,9 @@ class Telegram
             return $this->commands_objects[$command];
         }
 
-        $which                       = [Command::AUTH_SYSTEM];
+        $which = [Command::AUTH_SYSTEM];
         $this->isAdmin() && $which[] = Command::AUTH_ADMIN;
-        $which[]                     = Command::AUTH_USER;
+        $which[] = Command::AUTH_USER;
 
         foreach ($which as $auth) {
             $command_class = $this->getCommandClassName($auth, $command, $filepath);
@@ -325,7 +340,7 @@ class Telegram
 
                 // Automatic dependency injection for Redis
                 if (self::$redis_connection) {
-                    $reflection = new ReflectionClass($command_obj);
+                    $reflection = new \ReflectionClass($command_obj);
                     if ($reflection->hasProperty('redis')) {
                         $redis_property = $reflection->getProperty('redis');
                         $redis_property->setAccessible(true);
@@ -369,6 +384,8 @@ class Telegram
      * Set custom input string for debug purposes
      *
      * @param string $input (json format)
+     *
+     * @return Telegram
      */
     public function setCustomInput(string $input): Telegram
     {
@@ -379,6 +396,8 @@ class Telegram
 
     /**
      * Get custom input string for debug purposes
+     *
+     * @return string
      */
     public function getCustomInput(): string
     {
@@ -387,6 +406,8 @@ class Telegram
 
     /**
      * Get the ServerResponse of the last Command execution
+     *
+     * @return ServerResponse
      */
     public function getLastCommandResponse(): ServerResponse
     {
@@ -399,7 +420,9 @@ class Telegram
      * @todo Remove backwards compatibility for old signature and force $data to be an array.
      *
      * @param array|int|null $data
+     * @param int|null       $timeout
      *
+     * @return ServerResponse
      * @throws TelegramException
      */
     public function handleGetUpdates($data = null, ?int $timeout = null): ServerResponse
@@ -407,6 +430,8 @@ class Telegram
         if (empty($this->bot_username)) {
             throw new TelegramException('Bot Username is not defined!');
         }
+
+        // DB connection check removed
 
         $offset = 0;
         $limit  = null;
@@ -418,10 +443,10 @@ class Telegram
         if (!is_array($data)) {
             $limit = $data;
 
-            // @trigger_error(
-            //     sprintf('Use of $limit and $timeout parameters in %s is deprecated. Use $data array instead.', __METHOD__),
-            //     E_USER_DEPRECATED,
-            // );
+            @trigger_error(
+                sprintf('Use of $limit and $timeout parameters in %s is deprecated. Use $data array instead.', __METHOD__),
+                E_USER_DEPRECATED
+            );
         } else {
             $offset          = $data['offset'] ?? $offset;
             $limit           = $data['limit'] ?? $limit;
@@ -437,10 +462,12 @@ class Telegram
                     throw new TelegramException('Custom input is empty');
                 }
                 $response = new ServerResponse($input, $this->bot_username);
-            } catch (Throwable $e) {
+            } catch (\Throwable $e) {
                 throw new TelegramException('Invalid custom input JSON: ' . $e->getMessage());
             }
         } else {
+            // DB::isDbConnected() && $last_update = DB::selectTelegramUpdate(1) // DB related last_update_id fetching removed
+
             if ($this->last_update_id !== null) {
                 $offset = $this->last_update_id + 1; // As explained in the telegram bot API documentation.
             }
@@ -458,7 +485,8 @@ class Telegram
                 $this->processUpdate($update);
             }
 
-            if (! $custom_input && $this->last_update_id !== null && $offset === 0) {
+            // DB related check removed
+            if (!$custom_input && $this->last_update_id !== null && $offset === 0) {
                 // Mark update(s) as read after handling
                 $offset = $this->last_update_id + 1;
                 $limit  = 1;
@@ -472,6 +500,8 @@ class Telegram
 
     /**
      * Handle bot request from webhook
+     *
+     * @return bool
      *
      * @throws TelegramException
      */
@@ -507,6 +537,10 @@ class Telegram
 
     /**
      * Get the command name from the command type
+     *
+     * @param string $type
+     *
+     * @return string
      */
     protected function getCommandFromType(string $type): string
     {
@@ -516,6 +550,9 @@ class Telegram
     /**
      * Process bot Update request
      *
+     * @param Update $update
+     *
+     * @return ServerResponse
      * @throws TelegramException
      */
     public function processUpdate(Update $update): ServerResponse
@@ -523,32 +560,41 @@ class Telegram
         $this->update         = $update;
         $this->last_update_id = $update->getUpdateId();
 
+        // If Redis is enabled, check if this update has already been processed.
+        if (self::$redis_connection) {
+            $redis_key = 'telegram_update_' . $this->last_update_id;
+            if (self::$redis_connection->get($redis_key)) {
+                // Return a fake success response to prevent Telegram from retrying.
+                return new ServerResponse(['ok' => true, 'result' => true], $this->bot_username);
+            }
+            // Store the update ID in Redis with a TTL of 60 seconds (matching the default timeout).
+            self::$redis_connection->setex($redis_key, self::$update_retention_time, '1');
+        }
+
         if (is_callable($this->update_filter)) {
             $reason = 'Update denied by update_filter';
-
             try {
                 $allowed = (bool) call_user_func_array($this->update_filter, [$update, $this, &$reason]);
             } catch (Exception $e) {
                 $allowed = false;
             }
 
-            if (! $allowed) {
+            if (!$allowed) {
                 TelegramLog::debug($reason);
-
                 return new ServerResponse(['ok' => false, 'description' => 'denied']);
             }
         }
 
-        // Load admin commands
+        //Load admin commands
         if ($this->isAdmin()) {
             $this->addCommandsPath(TB_BASE_COMMANDS_PATH . '/AdminCommands', false);
         }
 
-        // Make sure we have an up-to-date command list
-        // This is necessary to "require" all the necessary command files!
+        //Make sure we have an up-to-date command list
+        //This is necessary to "require" all the necessary command files!
         $this->commands_objects = $this->getCommandsList();
 
-        // If all else fails, it's a generic message.
+        //If all else fails, it's a generic message.
         $command = self::GENERIC_MESSAGE_COMMAND;
 
         $update_type = $this->update->getUpdateType();
@@ -573,12 +619,19 @@ class Telegram
             $command = $this->getCommandFromType($update_type);
         }
 
+        //Make sure we don't try to process update that was already processed
+        // DB related check removed
+        // DB related insert removed
+
         return $this->executeCommand($command);
     }
 
     /**
      * Execute /command
      *
+     * @param string $command
+     *
+     * @return ServerResponse
      * @throws TelegramException
      */
     public function executeCommand(string $command): ServerResponse
@@ -587,17 +640,17 @@ class Telegram
 
         $command_obj = $this->commands_objects[$command] ?? $this->getCommandObject($command);
 
-        if (! $command_obj || ! $command_obj->isEnabled()) {
-            // Failsafe in case the Generic command can't be found
+        if (!$command_obj || !$command_obj->isEnabled()) {
+            //Failsafe in case the Generic command can't be found
             if ($command === self::GENERIC_COMMAND) {
                 throw new TelegramException('Generic command missing!');
             }
 
-            // Handle a generic command or non existing one
+            //Handle a generic command or non existing one
             $this->last_command_response = $this->executeCommand(self::GENERIC_COMMAND);
         } else {
-            // execute() method is executed after preExecute()
-            // This is to prevent executing a DB query without a valid connection
+            //execute() method is executed after preExecute()
+            //This is to prevent executing a DB query without a valid connection
             if ($this->update) {
                 $this->last_command_response = $command_obj->setUpdate($this->update)->preExecute();
             } else {
@@ -610,6 +663,10 @@ class Telegram
 
     /**
      * @deprecated
+     *
+     * @param string $command
+     *
+     * @return string
      */
     protected function sanitizeCommand(string $command): string
     {
@@ -620,12 +677,14 @@ class Telegram
      * Enable a single Admin account
      *
      * @param int $admin_id Single admin id
+     *
+     * @return Telegram
      */
     public function enableAdmin(int $admin_id): Telegram
     {
         if ($admin_id <= 0) {
             TelegramLog::error('Invalid value "' . $admin_id . '" for admin.');
-        } elseif (! in_array($admin_id, $this->admins_list, true)) {
+        } elseif (!in_array($admin_id, $this->admins_list, true)) {
             $this->admins_list[] = $admin_id;
         }
 
@@ -636,6 +695,8 @@ class Telegram
      * Enable a list of Admin Accounts
      *
      * @param array $admin_ids List of admin ids
+     *
+     * @return Telegram
      */
     public function enableAdmins(array $admin_ids): Telegram
     {
@@ -648,6 +709,8 @@ class Telegram
 
     /**
      * Get list of admins
+     *
+     * @return array
      */
     public function getAdminList(): array
     {
@@ -660,11 +723,13 @@ class Telegram
      * If no user id is passed, the current update is checked for a valid message sender.
      *
      * @param int|null $user_id
+     *
+     * @return bool
      */
     public function isAdmin($user_id = null): bool
     {
         if ($user_id === null && $this->update !== null) {
-            // Try to figure out if the user is an admin
+            //Try to figure out if the user is an admin
             $update_methods = [
                 'getMessage',
                 'getEditedMessage',
@@ -674,7 +739,6 @@ class Telegram
                 'getChosenInlineResult',
                 'getCallbackQuery',
             ];
-
             foreach ($update_methods as $update_method) {
                 $object = call_user_func([$this->update, $update_method]);
                 if ($object !== null && $from = $object->getFrom()) {
@@ -689,6 +753,8 @@ class Telegram
 
     /**
      * Check if user required the db connection
+     *
+     * @return bool
      */
     public function isDbEnabled(): bool
     {
@@ -699,30 +765,30 @@ class Telegram
      * Add a single custom command class
      *
      * @param string $command_class Full command class name
+     *
+     * @return Telegram
      */
     public function addCommandClass(string $command_class): Telegram
     {
-        if (! $command_class || ! class_exists($command_class)) {
+        if (!$command_class || !class_exists($command_class)) {
             $error = sprintf('Command class "%s" does not exist.', $command_class);
             TelegramLog::error($error);
-
             throw new InvalidArgumentException($error);
         }
 
-        if (! is_a($command_class, Command::class, true)) {
+        if (!is_a($command_class, Command::class, true)) {
             $error = sprintf('Command class "%s" does not extend "%s".', $command_class, Command::class);
             TelegramLog::error($error);
-
             throw new InvalidArgumentException($error);
         }
 
         // Dummy object to get data from.
         $command_object = new $command_class($this);
 
-        $auth                                       = null;
+        $auth = null;
         $command_object->isSystemCommand() && $auth = Command::AUTH_SYSTEM;
-        $command_object->isAdminCommand() && $auth  = Command::AUTH_ADMIN;
-        $command_object->isUserCommand() && $auth   = Command::AUTH_USER;
+        $command_object->isAdminCommand() && $auth = Command::AUTH_ADMIN;
+        $command_object->isUserCommand() && $auth = Command::AUTH_USER;
 
         if ($auth) {
             $command = mb_strtolower($command_object->getName());
@@ -737,6 +803,8 @@ class Telegram
      * Add multiple custom command classes
      *
      * @param array $command_classes List of full command class names
+     *
+     * @return Telegram
      */
     public function addCommandClasses(array $command_classes): Telegram
     {
@@ -751,6 +819,8 @@ class Telegram
      * Set a single custom commands path
      *
      * @param string $path Custom commands path to set
+     *
+     * @return Telegram
      */
     public function setCommandsPath(string $path): Telegram
     {
@@ -766,12 +836,14 @@ class Telegram
      *
      * @param string $path   Custom commands path to add
      * @param bool   $before If the path should be prepended or appended to the list
+     *
+     * @return Telegram
      */
     public function addCommandsPath(string $path, bool $before = true): Telegram
     {
-        if (! is_dir($path)) {
+        if (!is_dir($path)) {
             TelegramLog::error('Commands path "' . $path . '" does not exist.');
-        } elseif (! in_array($path, $this->commands_paths, true)) {
+        } elseif (!in_array($path, $this->commands_paths, true)) {
             if ($before) {
                 array_unshift($this->commands_paths, $path);
             } else {
@@ -786,6 +858,8 @@ class Telegram
      * Set multiple custom commands paths
      *
      * @param array $paths Custom commands paths to add
+     *
+     * @return Telegram
      */
     public function setCommandsPaths(array $paths): Telegram
     {
@@ -801,6 +875,8 @@ class Telegram
      *
      * @param array $paths  Custom commands paths to add
      * @param bool  $before If the paths should be prepended or appended to the list
+     *
+     * @return Telegram
      */
     public function addCommandsPaths(array $paths, bool $before = true): Telegram
     {
@@ -813,6 +889,8 @@ class Telegram
 
     /**
      * Return the list of commands paths
+     *
+     * @return array
      */
     public function getCommandsPaths(): array
     {
@@ -821,6 +899,8 @@ class Telegram
 
     /**
      * Return the list of command classes
+     *
+     * @return array
      */
     public function getCommandClasses(): array
     {
@@ -831,6 +911,8 @@ class Telegram
      * Set custom upload path
      *
      * @param string $path Custom upload path
+     *
+     * @return Telegram
      */
     public function setUploadPath(string $path): Telegram
     {
@@ -841,6 +923,8 @@ class Telegram
 
     /**
      * Get custom upload path
+     *
+     * @return string
      */
     public function getUploadPath(): string
     {
@@ -851,6 +935,8 @@ class Telegram
      * Set custom download path
      *
      * @param string $path Custom download path
+     *
+     * @return Telegram
      */
     public function setDownloadPath(string $path): Telegram
     {
@@ -861,6 +947,8 @@ class Telegram
 
     /**
      * Get custom download path
+     *
+     * @return string
      */
     public function getDownloadPath(): string
     {
@@ -873,6 +961,11 @@ class Telegram
      * Provide further variables to a particular commands.
      * For example you can add the channel name at the command /sendtochannel
      * Or you can add the api key for external service.
+     *
+     * @param string $command
+     * @param array  $config
+     *
+     * @return Telegram
      */
     public function setCommandConfig(string $command, array $config): Telegram
     {
@@ -883,6 +976,10 @@ class Telegram
 
     /**
      * Get command config
+     *
+     * @param string $command
+     *
+     * @return array
      */
     public function getCommandConfig(string $command): array
     {
@@ -891,6 +988,8 @@ class Telegram
 
     /**
      * Get API key
+     *
+     * @return string
      */
     public function getApiKey(): string
     {
@@ -899,6 +998,8 @@ class Telegram
 
     /**
      * Get Bot name
+     *
+     * @return string
      */
     public function getBotUsername(): string
     {
@@ -907,6 +1008,8 @@ class Telegram
 
     /**
      * Get Bot Id
+     *
+     * @return int
      */
     public function getBotId(): int
     {
@@ -915,6 +1018,8 @@ class Telegram
 
     /**
      * Get Version
+     *
+     * @return string
      */
     public function getVersion(): string
     {
@@ -924,8 +1029,10 @@ class Telegram
     /**
      * Set Webhook for bot
      *
-     * @param array $data Optional parameters.
+     * @param string $url
+     * @param array  $data Optional parameters.
      *
+     * @return ServerResponse
      * @throws TelegramException
      */
     public function setWebhook(string $url, array $data = []): ServerResponse
@@ -934,7 +1041,7 @@ class Telegram
             throw new TelegramException('Hook url is empty!');
         }
 
-        $data = array_intersect_key($data, array_flip([
+        $data        = array_intersect_key($data, array_flip([
             'certificate',
             'ip_address',
             'max_connections',
@@ -945,15 +1052,15 @@ class Telegram
         $data['url'] = $url;
 
         // If the certificate is passed as a path, encode and add the file to the data array.
-        if (! empty($data['certificate']) && is_string($data['certificate'])) {
+        if (!empty($data['certificate']) && is_string($data['certificate'])) {
             $data['certificate'] = Request::encodeFile($data['certificate']);
         }
 
         $result = Request::setWebhook($data);
 
-        if (! $result->isOk()) {
+        if (!$result->isOk()) {
             throw new TelegramException(
-                'Webhook was not set! Error: ' . $result->getErrorCode() . ' ' . $result->getDescription(),
+                'Webhook was not set! Error: ' . $result->getErrorCode() . ' ' . $result->getDescription()
             );
         }
 
@@ -963,15 +1070,18 @@ class Telegram
     /**
      * Delete any assigned webhook
      *
+     * @param array $data
+     *
+     * @return ServerResponse
      * @throws TelegramException
      */
     public function deleteWebhook(array $data = []): ServerResponse
     {
         $result = Request::deleteWebhook($data);
 
-        if (! $result->isOk()) {
+        if (!$result->isOk()) {
             throw new TelegramException(
-                'Webhook was not deleted! Error: ' . $result->getErrorCode() . ' ' . $result->getDescription(),
+                'Webhook was not deleted! Error: ' . $result->getErrorCode() . ' ' . $result->getDescription()
             );
         }
 
@@ -981,7 +1091,10 @@ class Telegram
     /**
      * Replace function `ucwords` for UTF-8 characters in the class definition and commands
      *
+     * @param string $str
      * @param string $encoding (default = 'UTF-8')
+     *
+     * @return string
      */
     protected function ucWordsUnicode(string $str, string $encoding = 'UTF-8'): string
     {
@@ -991,7 +1104,10 @@ class Telegram
     /**
      * Replace function `ucfirst` for UTF-8 characters in the class definition and commands
      *
+     * @param string $str
      * @param string $encoding (default = 'UTF-8')
+     *
+     * @return string
      */
     protected function ucFirstUnicode(string $str, string $encoding = 'UTF-8'): string
     {
@@ -1001,26 +1117,59 @@ class Telegram
 
     /**
      * Enable Redis connection
+     *
+     * @param array $config
+     * @return Telegram
      */
     public function enableRedis(array $config = []): Telegram
     {
         if (empty($config)) {
             $config = [
-                'host' => '127.0.0.1',
-                'port' => 6379,
+                'host'   => '127.0.0.1',
+                'port'   => 6379,
             ];
         }
 
-        self::$redis_connection = new \Redis();
-        self::$redis_connection->connect($config['host'], $config['port']);
+        $redis = new \Redis();
+        $redis->connect($config['host'], $config['port']);
+
+        if (!empty($config['password'])) {
+            $redis->auth($config['password']);
+        }
+
+        self::$redis_connection = $redis;
 
         return $this;
     }
 
     /**
-     * Get the shared Redis client instance.
+     * Set a custom Redis connection
+     *
+     * @param \Redis $redis
+     * @return void
      */
-    public static function getRedis(): ?Redis
+    public static function setRedis(\Redis $redis): void
+    {
+        self::$redis_connection = $redis;
+    }
+
+    /**
+     * Set the update retention time in Redis
+     *
+     * @param int $seconds
+     * @return void
+     */
+    public static function setUpdateRetentionTime(int $seconds): void
+    {
+        self::$update_retention_time = $seconds;
+    }
+
+    /**
+     * Get the shared Redis client instance.
+     *
+     * @return \Redis|null
+     */
+    public static function getRedis(): ?\Redis
     {
         return self::$redis_connection;
     }
@@ -1028,6 +1177,9 @@ class Telegram
     /**
      * Enable requests limiter
      *
+     * @param array $options
+     *
+     * @return Telegram
      * @throws TelegramException
      */
     public function enableLimiter(array $options = []): Telegram
@@ -1040,7 +1192,9 @@ class Telegram
     /**
      * Run provided commands
      *
-     * @return list<ServerResponse>
+     * @param array $commands
+     *
+     * @return ServerResponse[]
      *
      * @throws TelegramException
      */
@@ -1087,16 +1241,18 @@ class Telegram
             ]);
         }
 
-        $newUpdate = static fn($text = '') => new Update([
-            'update_id' => -1,
-            'message'   => [
-                'message_id' => -1,
-                'date'       => time(),
-                'from'       => json_decode($from->toJson(), true),
-                'chat'       => json_decode($chat->toJson(), true),
-                'text'       => $text,
-            ],
-        ]);
+        $newUpdate = static function ($text = '') use ($from, $chat) {
+            return new Update([
+                'update_id' => -1,
+                'message'   => [
+                    'message_id' => -1,
+                    'date'       => time(),
+                    'from'       => json_decode($from->toJson(), true),
+                    'chat'       => json_decode($chat->toJson(), true),
+                    'text'       => $text,
+                ],
+            ]);
+        };
 
         $responses = [];
 
@@ -1117,6 +1273,8 @@ class Telegram
 
     /**
      * Is this session initiated by runCommands()
+     *
+     * @return bool
      */
     public function isRunCommands(): bool
     {
@@ -1125,6 +1283,10 @@ class Telegram
 
     /**
      * Switch to enable running getUpdates without a database
+     *
+     * @param bool $enable
+     *
+     * @return Telegram
      */
     public function useGetUpdatesWithoutDatabase(bool $enable = true): Telegram
     {
@@ -1135,6 +1297,8 @@ class Telegram
 
     /**
      * Return last update id
+     *
+     * @return int|null
      */
     public function getLastUpdateId(): ?int
     {
@@ -1143,6 +1307,10 @@ class Telegram
 
     /**
      * Set an update filter callback
+     *
+     * @param callable $callback
+     *
+     * @return Telegram
      */
     public function setUpdateFilter(callable $callback): Telegram
     {
@@ -1153,10 +1321,26 @@ class Telegram
 
     /**
      * Return update filter callback
+     *
+     * @return callable|null
      */
     public function getUpdateFilter(): ?callable
     {
         return $this->update_filter;
+    }
+
+    /**
+     * Set the secret token to be used for webhook verification
+     *
+     * @param string $secret_token
+     *
+     * @return Telegram
+     */
+    public function setSecretToken(string $secret_token): Telegram
+    {
+        $this->secret_token = $secret_token;
+
+        return $this;
     }
 
     /**
@@ -1175,21 +1359,6 @@ class Telegram
 
         return mb_strtolower(preg_replace('/(.)(?=[\p{Lu}])/u', '$1_', substr($class, 0, -7)));
     }
-
-    /**
-     * Set the secret token to be used for webhook verification
-     *
-     * @param string $secret_token
-     *
-     * @return Telegram
-     */
-    public function setSecretToken(string $secret_token): Telegram
-    {
-        $this->secret_token = $secret_token;
-
-        return $this;
-    }
-
 
     /**
      * Converts a command name into the name of a class.
