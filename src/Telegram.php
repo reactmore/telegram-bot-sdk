@@ -560,6 +560,14 @@ class Telegram
         $this->update         = $update;
         $this->last_update_id = $update->getUpdateId();
 
+        // FIX Telegram Business message
+        if ($update->getBusinessMessage() && !$update->getMessage()) {
+            $data = json_decode($update->toJson(), true);
+            // copy business_message → message
+            $data['message'] = $data['business_message'];
+            $this->update = new Update($data, $this->bot_username);
+        }
+
         // If Redis is enabled, check if this update has already been processed.
         if (self::$redis_connection) {
             $redis_key = 'telegram_update_' . $this->last_update_id;
@@ -598,8 +606,8 @@ class Telegram
         $command = self::GENERIC_MESSAGE_COMMAND;
 
         $update_type = $this->update->getUpdateType();
-        if ($update_type === 'message') {
-            $message = $this->update->getMessage();
+        if ($update_type === 'message' || $update_type === 'business_message') {
+            $message = $this->update->getMessage() ?? $this->update->getBusinessMessage();
             $type    = $message->getType();
 
             // Let's check if the message object has the type field we're looking for...
