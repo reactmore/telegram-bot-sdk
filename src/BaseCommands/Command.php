@@ -8,6 +8,8 @@ use Reactmore\TelegramBotSdk\Entities\ChatMemberUpdated;
 use Reactmore\TelegramBotSdk\Entities\ChosenInlineResult;
 use Reactmore\TelegramBotSdk\Entities\InlineQuery;
 use Reactmore\TelegramBotSdk\Entities\Message;
+use Reactmore\TelegramBotSdk\Entities\User;
+use Reactmore\TelegramBotSdk\Entities\Chat;
 use Reactmore\TelegramBotSdk\Entities\Payments\PreCheckoutQuery;
 use Reactmore\TelegramBotSdk\Entities\Payments\ShippingQuery;
 use Reactmore\TelegramBotSdk\Entities\Poll;
@@ -32,6 +34,7 @@ use Reactmore\TelegramBotSdk\Telegram;
  * @method Message            getEditedMessage()      Optional. New version of a message that is known to the bot and was edited
  * @method InlineQuery        getInlineQuery()        Optional. New incoming inline query
  * @method Message            getMessage()            Optional. New incoming message of any kind — text, photo, sticker, etc.
+ * @method Message            getBusinessMessage()    Optional. New message from a connected business account
  * @method ChatMemberUpdated  getMyChatMember()       Optional. The bot's chat member status was updated in a chat. For private chats, this update is received only when the bot is blocked or unblocked by the user.
  * @method Poll               getPoll()               Optional. New poll state. Bots receive only updates about polls, which are sent or stopped by the bot
  * @method PollAnswer         getPollAnswer()         Optional. A user changed their answer in a non-anonymous poll. Bots receive new votes only in polls that were sent by the bot itself.
@@ -396,5 +399,101 @@ abstract class Command
         }
 
         return Request::emptyResponse();
+    }
+
+    /**
+     * Ambil user yang sebenarnya berinteraksi (ngetik / klik inline button)
+     */
+    protected function getEffectiveUser(): ?\Reactmore\TelegramBotSdk\Entities\User
+    {
+        $update = $this->getUpdate();
+
+        if (!$update) {
+            return null;
+        }
+
+        if ($update->getCallbackQuery()) {
+            return $update->getCallbackQuery()->getFrom();
+        }
+
+        if ($update->getMessage()) {
+            return $update->getMessage()->getFrom();
+        }
+
+        if ($update->getEditedMessage()) {
+            return $update->getEditedMessage()->getFrom();
+        }
+
+        return null;
+    }
+
+    /**
+     * Ambil chat aktif
+     */
+    protected function getEffectiveChat(): ?\Reactmore\TelegramBotSdk\Entities\Chat
+    {
+        $update = $this->getUpdate();
+
+        if (!$update) {
+            return null;
+        }
+
+        if ($update->getCallbackQuery()) {
+            return $update->getCallbackQuery()->getMessage()?->getChat();
+        }
+
+        if ($update->getMessage()) {
+            return $update->getMessage()->getChat();
+        }
+
+        if ($update->getEditedMessage()) {
+            return $update->getEditedMessage()->getChat();
+        }
+
+        return null;
+    }
+
+    /**
+     * Ambil message konteks:
+     * - Callback: message yang berisi inline keyboard
+     * - Message biasa: message itu sendiri
+     */
+    protected function getEffectiveMessage(): ?\Reactmore\TelegramBotSdk\Entities\Message
+    {
+        $update = $this->getUpdate();
+
+        if (!$update) {
+            return null;
+        }
+
+        if ($update->getCallbackQuery()) {
+            return $update->getCallbackQuery()->getMessage();
+        }
+
+        if ($update->getMessage()) {
+            return $update->getMessage();
+        }
+
+        if ($update->getEditedMessage()) {
+            return $update->getEditedMessage();
+        }
+
+        return null;
+    }
+
+    /**
+     * Shortcut ambil user_id yang benar
+     */
+    protected function getEffectiveUserId(): ?int
+    {
+        return $this->getEffectiveUser()?->getId();
+    }
+
+    /**
+     * Shortcut ambil chat_id yang benar
+     */
+    protected function getEffectiveChatId(): ?int
+    {
+        return $this->getEffectiveChat()?->getId();
     }
 }
